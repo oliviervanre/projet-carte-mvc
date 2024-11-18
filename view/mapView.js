@@ -1,6 +1,9 @@
-import { departmentsData } from '../model/data.js';
+import { departmentsData, loadDepartmentsData } from '../model/data.js';
 
 export function initializeMap() {
+    // Charger les données mises à jour depuis le localStorage
+    loadDepartmentsData();
+
     const mapContainer = document.getElementById('map-container');
 
     // Créer la popup personnalisée
@@ -11,11 +14,9 @@ export function initializeMap() {
 
     // Fonction pour obtenir la couleur en fonction du pourcentage de déploiement (de rouge à vert)
     function getDeploymentColor(deploiement) {
-        // Dégradé de rouge (#FF0000) à vert (#00FF00)
-        const r = Math.floor((1 - deploiement / 100) * 255 + (deploiement / 100) * 0);
-        const g = Math.floor((1 - deploiement / 100) * 0 + (deploiement / 100) * 255);
-        const b = 0; // Le bleu reste constant pour ce dégradé
-        return `rgb(${r}, ${g}, ${b})`;
+        const r = Math.floor((1 - deploiement / 100) * 255);
+        const g = Math.floor((deploiement / 100) * 255);
+        return `rgb(${r}, ${g}, 0)`;
     }
 
     // Charger le fichier SVG dynamiquement
@@ -39,7 +40,8 @@ export function initializeMap() {
                     // Appliquer la couleur de fond en fonction du pourcentage de déploiement
                     departement.style.fill = color;
 
-                    departement.addEventListener('mouseover', (event) => {
+                    // Gestion de la popup
+                    departement.addEventListener('mouseover', () => {
                         popup.innerHTML = `
                             <strong>${nom} (${numero})</strong><br>
                             Région : ${region}<br>
