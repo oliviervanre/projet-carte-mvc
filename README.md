@@ -1,6 +1,6 @@
 
 ```markdown
-# Projet Déploiement NEO par Département (maquette de refonte de Surfasig)
+# Projet Déploiement terminaux par Département (maquette de refonte de Surfasig)
 
 ## Prérequis
 
