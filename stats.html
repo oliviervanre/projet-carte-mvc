@@ -3,31 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiques - Déploiements</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Statistiques de Déploiement</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100 bg-light">
 
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Statistiques</a>
+            <a class="navbar-brand" href="#">Statistiques du Déploiement</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+                <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link activet" href="index.html">Retour à la Carte</a>
+                        <a class="nav-link active" href="index.html">Carte</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container mt-4">
-        <h2>Statistiques Globales des Déploiements</h2>
-        <div id="stats-container" class="mt-4"></div>
+    
+
+    <!-- Contenu principal -->
+    <div class="container my-4 flex-grow-1">
+        <h2 class="text-center mb-4">Statistiques de Déploiement par Département</h2>
+
+        <!-- Section des statistiques générales -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Déploiement Moyen</h5>
+                        <p class="card-text" id="avgDeployment">50%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Département le Plus Déployé</h5>
+                        <p class="card-text" id="maxDeployment">Paris (75) - 78%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Département le Moins Déployé</h5>
+                        <p class="card-text" id="minDeployment">Nord (59) - 10%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des données par département -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Nom</th>
+                        <th>Région</th>
+                        <th>Déploiement (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="statsTable">
+                    <!-- Les données seront injectées ici via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Placeholder pour un graphique -->
+        <!-- Section du graphique -->
+<div class="my-4">
+    <h5 class="text-center">Graphique des Déploiements par Département</h5>
+    <canvas id="deploymentChart"></canvas>
+</div>
+
     </div>
 
+    <!-- Footer -->
+    <footer class="bg-light text-center py-3 mt-auto">
+        <div class="container">
+            <p>&copy; 2024 Déploiement NEO - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="controller/statsController.js"></script>
 </body>
 </html>
