@@ -14,10 +14,23 @@ export function initializeMap() {
 
     // Fonction pour obtenir la couleur en fonction du pourcentage de déploiement (de rouge à vert)
     function getDeploymentColor(deploiement) {
-        const r = Math.floor((1 - deploiement / 100) * 255);
-        const g = Math.floor((deploiement / 100) * 255);
-        return `rgb(${r}, ${g}, 0)`;
+        let r, g, b;
+    
+        if (deploiement <= 50) {
+            // Transition de rouge à jaune (0% à 50%)
+            r = 255;
+            g = Math.floor((deploiement / 50) * 255);
+            b = 0;
+        } else {
+            // Transition de jaune à vert (50% à 100%)
+            r = Math.floor((1 - (deploiement - 50) / 50) * 255);
+            g = 255;
+            b = 0;
+        }
+    
+        return `rgb(${r}, ${g}, ${b})`;
     }
+    
 
     // Charger le fichier SVG dynamiquement
     fetch('assets/carte-france-metropolitaine.svg')
