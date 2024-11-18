@@ -1,37 +1,52 @@
-import { departmentsData, loadDepartmentsData } from '../model/data.js';
-
-function displayDepartments() {
-    loadDepartmentsData();
-    const departmentsList = document.getElementById('departmentsList');
-    departmentsList.innerHTML = '';
-
-    departmentsData.forEach((department, index) => {
-        const { numero, nom, deploiement } = department;
-
-        const departmentDiv = document.createElement('div');
-        departmentDiv.classList.add('form-group');
-
-        departmentDiv.innerHTML = `
-            <label for="deployment-${index}">${nom} (${numero})</label>
-            <input type="number" class="form-control" id="deployment-${index}" value="${deploiement || 0}" min="0" max="100">
-        `;
-
-        departmentsList.appendChild(departmentDiv);
-    });
-}
-
-function saveDeployments(event) {
-    event.preventDefault();
-    const inputs = document.querySelectorAll('input[type="number"]');
-    inputs.forEach((input, index) => {
-        const value = parseInt(input.value, 10);
-        departmentsData[index].deploiement = isNaN(value) ? 0 : value;
-    });
-    localStorage.setItem('departmentsData', JSON.stringify(departmentsData));
-    alert('Pourcentages enregistrés avec succès.');
-}
+import { departmentsData, loadDepartmentsData, saveDepartmentsData } from '../model/data.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    displayDepartments();
-    document.getElementById('adminForm').addEventListener('submit', saveDeployments);
+    const departmentSelect = document.getElementById('departmentSelect');
+    const deploymentPercentage = document.getElementById('deploymentPercentage');
+    const confirmUpdate = document.getElementById('confirmUpdate');
+    const messageContainer = document.getElementById('messageContainer');
+
+    // Charger les données des départements
+    loadDepartmentsData();
+
+    // Remplir la liste déroulante
+    departmentsData.forEach(department => {
+        const option = document.createElement('option');
+        option.value = department.numero;
+        option.textContent = `${department.nom} (${department.numero})`;
+        departmentSelect.appendChild(option);
+    });
+
+    // Fonction pour afficher un message Bootstrap
+    function showMessage(message, type = 'success') {
+        messageContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
+
+    // Gestion de la confirmation de mise à jour
+    confirmUpdate.addEventListener('click', () => {
+        const numero = departmentSelect.value;
+        const newPercentage = parseInt(deploymentPercentage.value);
+
+        if (!numero || isNaN(newPercentage) || newPercentage < 0 || newPercentage > 100) {
+            showMessage("Veuillez sélectionner un département et entrer une valeur valide.", 'danger');
+            return;
+        }
+
+        // Mise à jour des données
+        const department = departmentsData.find(dep => dep.numero === numero);
+        if (department) {
+            department.deploiement = newPercentage;
+            saveDepartmentsData();
+            showMessage(`Le pourcentage de déploiement pour ${department.nom} a été mis à jour à ${newPercentage}%.`, 'success');
+        }
+
+        // Fermer la modale de confirmation
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+        modal.hide();
+    });
 });

@@ -42,3 +42,8 @@ export function loadDepartmentsData() {
         departmentsData = savedData;
     }
 }
+
+// data.js
+export function saveDepartmentsData() {
+    localStorage.setItem('departmentsData', JSON.stringify(departmentsData));
+}
