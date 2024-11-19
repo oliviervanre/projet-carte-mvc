@@ -25,8 +25,9 @@
 
 Pour lancer l'application sur un serveur local, utilisez la commande suivante :
 
-```bash
-npx http-server . -p 3000
+```bash691794
+
+node server.js
 ```
 
 Cela lancera le serveur sur le port **3000**.
