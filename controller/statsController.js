@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const minDeployment = document.getElementById('minDeployment');
     const statsTable = document.getElementById('statsTable');
 
-    // Calculer les statistiques
+    // Calculer les statistiques globales
     const totalDeployment = departmentsData.reduce((sum, dep) => sum + dep.deploiement, 0);
     const avg = (totalDeployment / departmentsData.length).toFixed(2);
     const maxDep = departmentsData.reduce((a, b) => (a.deploiement > b.deploiement ? a : b));
@@ -19,33 +19,27 @@ document.addEventListener('DOMContentLoaded', () => {
     maxDeployment.textContent = `${maxDep.nom} (${maxDep.numero}) - ${maxDep.deploiement}%`;
     minDeployment.textContent = `${minDep.nom} (${minDep.numero}) - ${minDep.deploiement}%`;
 
- // Charger les données depuis le localStorage
- const savedData = JSON.parse(localStorage.getItem('departmentsData')) || [];
+    // Charger les données depuis le localStorage
+    const savedData = JSON.parse(localStorage.getItem('departmentsData')) || [];
 
- // Vérification que le tableau existe dans le DOM
- const tableBody = document.querySelector('#statsTable tbody');
- if (!tableBody) {
-     console.error("L'élément <tbody> pour le tableau n'a pas été trouvé dans le DOM.");
-     return;
- }
+    const tableBody = document.querySelector('#statsTable tbody');
+    tableBody.innerHTML = ''; // Vider le tableau avant de le remplir
 
- tableBody.innerHTML = ''; // Vider le tableau avant de le remplir
+    // Remplir les lignes du tableau dynamiquement
+    savedData.forEach(department => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${department.numero}</td>
+            <td>${department.nom}</td>
+            <td>${department.region}</td>
+            <td>${department.deploiement}%</td>
+        `;
+        tableBody.appendChild(row);
+    });
 
- // Remplir les lignes du tableau dynamiquement
- savedData.forEach(department => {
-     const row = document.createElement('tr');
-     row.innerHTML = `
-         <td>${department.numero}</td>
-         <td>${department.nom}</td>
-         <td>${department.region}</td>
-         <td>${department.deploiement}%</td>
-     `;
-     tableBody.appendChild(row);
- });
-
-            // Initialiser DataTable
+    // Initialiser DataTable
     if ($.fn.DataTable.isDataTable('#statsTable')) {
-        $('#statsTable').DataTable().clear().destroy(); // Réinitialiser DataTable si déjà initialisé
+        $('#statsTable').DataTable().clear().destroy();
     }
 
     $('#statsTable').DataTable({
@@ -53,34 +47,41 @@ document.addEventListener('DOMContentLoaded', () => {
         searching: true,
         ordering: true,
         info: true,
-        scrollX: true, // Activer le défilement horizontal
-        autoWidth: true, // Autoriser DataTables à ajuster la largeur
+        scrollX: true,
+        autoWidth: true,
     });
-    
+
     document.querySelector('.dataTables_wrapper').className = '';
 
+    // Regrouper les départements par région et calculer la moyenne de déploiement
+    const regions = {};
+    departmentsData.forEach(dep => {
+        if (!regions[dep.region]) {
+            regions[dep.region] = { total: 0, count: 0 };
+        }
+        regions[dep.region].total += dep.deploiement;
+        regions[dep.region].count += 1;
+    });
 
-    // Initialiser le graphique
+    const regionLabels = Object.keys(regions);
+    const regionData = regionLabels.map(region => (regions[region].total / regions[region].count).toFixed(2));
+
+    // Initialiser le graphique pour les régions
     const ctx = document.getElementById('deploymentChart').getContext('2d');
-
-    // Préparer les données pour le graphique
-    const labels = departmentsData.map(dep => `${dep.nom} (${dep.numero})`);
-    const data = departmentsData.map(dep => dep.deploiement);
-
-    // Créer le graphique
     const deploymentChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: regionLabels,
             datasets: [{
-                label: 'Pourcentage de Déploiement',
-                data: data,
+                label: 'Pourcentage de Déploiement Moyen par Région',
+                data: regionData,
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]
         },
         options: {
+            indexAxis: 'y', // Inverser les axes pour barres horizontales
             responsive: true,
             plugins: {
                 legend: {
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             scales: {
-                y: {
+                x: {
                     beginAtZero: true,
                     max: 100,
                     title: {
@@ -102,10 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         text: 'Pourcentage (%)'
                     }
                 },
-                x: {
+                y: {
                     title: {
                         display: true,
-                        text: 'Départements'
+                        text: 'Régions'
                     }
                 }
             }

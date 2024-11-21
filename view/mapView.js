@@ -12,25 +12,19 @@ export function initializeMap() {
     popup.style.display = 'none';
     document.body.appendChild(popup);
 
-    // Fonction pour obtenir la couleur en fonction du pourcentage de déploiement (de rouge à vert)
+    // Fonction pour obtenir la couleur en fonction du pourcentage de déploiement (par seuils)
     function getDeploymentColor(deploiement) {
-        let r, g, b;
-    
-        if (deploiement <= 50) {
-            // Transition de rouge à jaune (0% à 50%)
-            r = 255;
-            g = Math.floor((deploiement / 50) * 255);
-            b = 0;
-        } else {
-            // Transition de jaune à vert (50% à 100%)
-            r = Math.floor((1 - (deploiement - 50) / 50) * 255);
-            g = 255;
-            b = 0;
-        }
-    
-        return `rgb(${r}, ${g}, ${b})`;
+        if (deploiement >= 90) return 'rgb(0, 128, 0)'; // Vert foncé (100-90%)
+        if (deploiement >= 80) return 'rgb(51, 153, 51)'; // Vert moyen (89-80%)
+        if (deploiement >= 70) return 'rgb(102, 204, 102)'; // Vert clair (79-70%)
+        if (deploiement >= 60) return 'rgb(153, 204, 51)'; // Jaune-vert (69-60%)
+        if (deploiement >= 50) return 'rgb(204, 204, 0)'; // Jaune (59-50%)
+        if (deploiement >= 40) return 'rgb(255, 204, 0)'; // Jaune-orangé (49-40%)
+        if (deploiement >= 30) return 'rgb(255, 153, 51)'; // Orange (39-30%)
+        if (deploiement >= 20) return 'rgb(255, 102, 51)'; // Rouge-orangé (29-20%)
+        if (deploiement >= 10) return 'rgb(255, 51, 51)'; // Rouge clair (19-10%)
+        return 'rgb(255, 0, 0)'; // Rouge vif (9-0%)
     }
-    
 
     // Charger le fichier SVG dynamiquement
     fetch('assets/carte-france-metropolitaine.svg')
